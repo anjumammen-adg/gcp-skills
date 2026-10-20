@@ -1,0 +1,22 @@
+name: Sync from source
+on:
+  schedule:
+    - cron: '0 2 * * *'     # every day at 02:00 UTC (04:00 in Johannesburg)
+  workflow_dispatch:         # adds a manual "Run workflow" button
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Pull changes from google/skills
+        run: |
+          git config user.name "sync-bot"
+          git config user.email "sync-bot@users.noreply.github.com"
+          git remote add upstream https://github.com/google/skills.git
+          git fetch upstream
+          git merge upstream/main --no-edit
+          git push origin HEAD
