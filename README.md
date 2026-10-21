@@ -61,6 +61,7 @@ This command gives you an option to also remove obsolete skills.
   - [**Agent Platform Troubleshooting**](./skills/cloud/agent-platform-troubleshooting)
   - [**Agent Platform Tuning Management**](./skills/cloud/agent-platform-tuning-management)
   - [**API Gateway Remote MCP Server (Public Preview)**](./skills/cloud/api-gateway-mcp-server)
+  - [**Apigee as an Agent Gateway Service Extension**](./skills/cloud/apigee-agent-gateway-governance)
   - [**BigQuery AI & ML**](./skills/cloud/bigquery-ai-ml)
   - [**Gemini API in Agent Platform**](./skills/cloud/gemini-api)
   - [**Gemini Enterprise Agent Platform - Managed Agents API Skill**](./skills/cloud/gemini-agents-api)
