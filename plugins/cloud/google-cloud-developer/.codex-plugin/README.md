@@ -102,3 +102,51 @@ plugin installed, you can prompt your agent:
 
 3.  **Interaction with guardrails**: The agent outlines a workflow roadmap and
     offers to act on those steps before modifying any resources.
+
+--------------------------------------------------------------------------------
+
+## Network, Sandbox, and Permission Requirements
+
+If you run Codex in its default sandbox or behind a corporate firewall/proxy,
+configure your environment to allow the following outbound URLs and terminal
+commands.
+
+> [!NOTE] The core bundled skills (`gcloud`, `google-cloud-recipe-auth`,
+> `google-cloud-recipe-onboarding`) and the `developer-knowledge` MCP server
+> only require `gcloud` and HTTPS access to `*.googleapis.com`,
+> `docs.cloud.google.com`, and `developers.google.com`. Access to GitHub domains
+> (`raw.githubusercontent.com`, `api.github.com`) and `curl` is only required at
+> runtime for dynamic skill discovery (`finding-google-skills`) and the REST API
+> fallback in `retrieving-developer-knowledge`. Dynamically fetched skills may
+> require additional product-specific CLI tools or API endpoints.
+
+### 1. Required Outbound URL Allowlist
+
+| Domain / Endpoint | Used By | Purpose |
+| :--- | :--- | :--- |
+| `https://raw.githubusercontent.com` (`githubusercontent.com`) | `finding-google-skills` | Fetches the `index.json` catalog and on-demand `SKILL.md` / reference files from `google/skills`. |
+| `https://github.com`, `https://api.github.com` | Installer, `finding-google-skills`, `google-cloud-discovery` | Installs the plugin and queries the GitHub Trees API fallback (`/repos/google/skills/git/trees/main`). |
+| `https://developerknowledge.googleapis.com` | `developer-knowledge` MCP, `retrieving-developer-knowledge` | Connects to the remote MCP server (`/mcp`) and REST API v1 fallback (`/v1/documents:*`, `/v1:answerQuery`). |
+| `https://*.googleapis.com` | `gcloud`, `google-cloud-recipe-auth`, `google-cloud-recipe-onboarding` | Authenticates and executes `gcloud` CLI commands against Google Cloud APIs. |
+| `https://docs.cloud.google.com`, `https://developers.google.com` | `gcloud`, `google-cloud-recipe-auth`, `google-cloud-recipe-onboarding` | Reads official Google Cloud documentation (`*.md.txt`). |
+
+### 2. Required Terminal Command Permissions
+
+-   **Skill discovery & REST fallback** (`finding-google-skills`,
+    `retrieving-developer-knowledge`): `curl` (`curl -sSL`, `curl -s -X POST`,
+    `curl -s -G`), `jq`, `grep`, and optionally `npx skills` (only if installing
+    discovered skills locally).
+-   **Read-only `gcloud` checks** (`gcloud`, `google-cloud-recipe-onboarding`):
+    `which gcloud`, `gcloud help`, `gcloud topic`, `gcloud cheat-sheet`,
+    `gcloud auth list`, `gcloud config get-value`, `gcloud config list`,
+    `gcloud organizations list`, `gcloud projects list`,
+    `gcloud projects describe`, `gcloud billing projects describe`,
+    `gcloud billing accounts list`, `gcloud compute regions list`,
+    `gcloud compute zones list`.
+-   **Interactive or state-changing `gcloud` commands**
+    (`google-cloud-recipe-onboarding`, `google-cloud-recipe-auth`):
+    `gcloud auth login`, `gcloud auth application-default login`,
+    `gcloud config set`, `gcloud projects create`,
+    `gcloud billing projects link`, `gcloud services enable`. Do not auto-allow
+    these commands; keep them gated behind confirmation or run them manually
+    beforehand.
