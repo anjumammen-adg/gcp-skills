@@ -76,6 +76,7 @@ This command gives you an option to also remove obsolete skills.
   - [**Troubleshoot GKE TPU multi-slice hangs with the MXLA Hang Analyzer**](./skills/cloud/gke-ai-troubleshooting-tpu-mxla-hang)
   - [**Troubleshoot GKE TPU performance degradation with ML Diagnostics Workload Monitoring**](./skills/cloud/gke-ai-troubleshooting-tpu-performance-degradation)
 - **Infrastructure**
+  - [**Cloud Network Insights**](./skills/cloud/cloud-network-insights)
   - [**Cloud Storage Basics**](./skills/cloud/google-cloud-storage-basics)
   - [**Cloud Storage Bucket Architect**](./skills/cloud/google-cloud-storage-bucket-architect)
   - [**Cloud Storage FUSE**](./skills/cloud/google-cloud-storage-fuse)
@@ -122,6 +123,7 @@ This command gives you an option to also remove obsolete skills.
   - [**BigFrames (BigQuery DataFrame) basics**](./skills/cloud/bigquery-bigframes)
   - [**BigQuery Asset Impact Analysis**](./skills/cloud/datalineage-bigquery-asset-impact-analysis)
   - [**BigQuery Basics**](./skills/cloud/bigquery-basics)
+  - [**BigQuery Migration Service (BQMS) SQL Translator**](./skills/cloud/bigquery-migration-sql-translator)
   - [**BigQuery Observability**](./skills/cloud/bigquery-observability)
   - [**BigQuery Optimization Workflow**](./skills/cloud/bigquery-optimization)
   - [**BigQuery Troubleshooting**](./skills/cloud/bigquery-troubleshooting)
@@ -145,6 +147,7 @@ This command gives you an option to also remove obsolete skills.
 - **Application development**
   - [**Migrate Legacy Codebases to Safe Rust**](./skills/developers/migrate-to-rust)
 - **Management tools**
+  - [**Cloud Logging Finops**](./skills/cloud/cloud-logging-finops)
   - [**Cloud Monitoring Chart Generation Skill (`cloud-monitoring-chart-generation`)**](./skills/cloud/cloud-monitoring-chart-generation)
   - [**Cloud Monitoring ListTimeSeries Request Generator**](./skills/cloud/cloud-monitoring-list-time-series-request)
   - [**Cloud Monitoring Notification Channels Configuration**](./skills/cloud/cloud-monitoring-notification-channels-configuration)
