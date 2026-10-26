@@ -16,8 +16,8 @@ This reference covers the v1 and v2 REST endpoints for authoring, versioning, te
 - **Regional base URL**: Some documentation pages use `https://LOCATION-integrations.googleapis.com/v1/projects/PROJECT_ID/locations/LOCATION` for `:execute` and `:lift`. If you use the regional host, the host prefix and `locations/LOCATION` must match (the public API trigger guide contains a known typo pairing `us-east1` with `locations/us-central1`). Prefer the global host `https://integrations.googleapis.com` consistently.
 - **Required OAuth scope**: `https://www.googleapis.com/auth/cloud-platform`
 - **REST header**: `-H "Authorization: Bearer $(gcloud auth print-access-token)"`
-- **Client libraries**: For the Python discovery client (`pip install "google-api-python-client>=2.100.0,<3" "google-auth>=2.20.0,<3"`), run `gcloud auth application-default login` to configure Application Default Credentials.
-- **Service account impersonation**: Run `gcloud config set auth/impersonate_service_account SA_EMAIL` (caller needs `roles/iam.serviceAccountTokenCreator` on `SA_EMAIL`).
+- **Client libraries**: For the Python discovery client (`pip install "google-api-python-client>=2.100.0,<3" "google-auth>=2.20.0,<3"`), run `gcloud auth application-default login` and `gcloud auth application-default set-quota-project PROJECT_ID` to configure Application Default Credentials (changes host or credential state; get the user's approval first).
+- **Service account impersonation**: Run `gcloud config set auth/impersonate_service_account SA_EMAIL` (caller needs `roles/iam.serviceAccountTokenCreator` on `SA_EMAIL`) (changes host or credential state; get the user's approval first).
 
 | Header | Applies To | Default | Notes |
 | :--- | :--- | :--- | :--- |

@@ -12,7 +12,7 @@ This reference covers supported Application Integration interfaces, REST endpoin
 ## Supported Interfaces and What Does Not Exist
 
 - **No `gcloud` command group**: Neither `gcloud integrations` nor `gcloud connectors` exists. Use `gcloud` only for generic tasks (`gcloud services enable`, `gcloud auth`, `gcloud projects`, `gcloud iam`, `gcloud logging read`).
-- **No dedicated Cloud Client Library**: `https://docs.cloud.google.com/application-integration/docs/libraries` returns 404. For Python, use the discovery-based `google-api-python-client` (`pip install "google-api-python-client>=2.100.0,<3" "google-auth>=2.20.0,<3"`).
+- **No dedicated Cloud Client Library**: `https://docs.cloud.google.com/application-integration/docs/libraries` returns 404. For Python, use the discovery-based `google-api-python-client` (`pip install "google-api-python-client>=2.100.0,<3" "google-auth>=2.20.0,<3"`) (changes host or credential state; get the user's approval first).
 - **No Google-managed remote MCP server**: Neither Application Integration (`integrations.googleapis.com`) nor Integration Connectors (`connectors.googleapis.com`) appears on Google Cloud's remote MCP servers list.
 - **Outbound MCP connector vs. MCP server**: Integration Connectors provides an outbound **MCP connector** (`MCP v1` and `v2`) that lets an integration connect out to an external MCP server and expose its tools as connector entities and actions. It does not expose Application Integration itself as a managed MCP server.
 
@@ -37,12 +37,12 @@ This reference covers supported Application Integration interfaces, REST endpoin
   ```bash
   -H "Authorization: Bearer $(gcloud auth print-access-token)"
   ```
-- **For Python and ADK**: Configure Application Default Credentials (ADC) and set the quota project:
+- **For Python and ADK**: Configure Application Default Credentials (ADC) and set the quota project (changes host or credential state; get the user's approval first):
   ```bash
   gcloud auth application-default login
   gcloud auth application-default set-quota-project PROJECT_ID
   ```
-- **Service account impersonation**: When testing as a service account (`SA_EMAIL`), the caller needs `roles/iam.serviceAccountTokenCreator` on `SA_EMAIL`:
+- **Service account impersonation**: When testing as a service account (`SA_EMAIL`), the caller needs `roles/iam.serviceAccountTokenCreator` on `SA_EMAIL` (changes host or credential state; get the user's approval first):
   ```bash
   gcloud config set auth/impersonate_service_account SA_EMAIL
   # Unset when finished:
@@ -87,7 +87,7 @@ curl -X POST \
 
 ## Python Discovery Client (`google-api-python-client`)
 
-Install dependencies first with `pip install "google-api-python-client>=2.100.0,<3" "google-auth>=2.20.0,<3"`, then build the v1 service from the discovery document (`integrations` v1 or `connectors` v1).
+Install dependencies first with `pip install "google-api-python-client>=2.100.0,<3" "google-auth>=2.20.0,<3"` (changes host or credential state; get the user's approval first), then build the v1 service from the discovery document (`integrations` v1 or `connectors` v1).
 
 ```python
 import google.auth
