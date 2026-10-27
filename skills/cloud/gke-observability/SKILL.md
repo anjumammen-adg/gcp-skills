@@ -9,7 +9,7 @@ description: >-
   monitoring permission errors. Don't use to configure local application logging
   frameworks or external APMs outside GKE.
 metadata:
-  version: "1.1.5"
+  version: "1.1.6"
   category: CloudObservabilityAndMonitoring
 ---
 
@@ -198,6 +198,55 @@ gcloud container clusters describe <CLUSTER_NAME> --region <REGION> \
   --quiet
 ```
 
+### Control-Plane Component Logs & Slow Request Traces
+
+`kube-apiserver` component logs (`API_SERVER`) are an **optional feature that is
+not enabled by default** and must be explicitly turned on
+(`--logging=SYSTEM,WORKLOADS,API_SERVER`); always mention this and link to
+https://docs.cloud.google.com/kubernetes-engine/docs/how-to/view-logs#control_plane_logs
+when recommending `apiserver` log analysis.
+
+To diagnose which specific `kube-apiserver` requests were slow and why:
+
+1.  **Search for `trace` or `Trace` entries**: Query `apiserver` component logs
+    (`resource.type="k8s_control_plane_component" AND
+    resource.labels.component_name="apiserver"`) for `trace` or `Trace` (for
+    example, `textPayload:"Trace["`).
+2.  **How to interpret trace logs**: `kube-apiserver` uses the upstream
+    [`k8s.io/utils/trace`](https://github.com/kubernetes/utils/blob/master/trace/README.md)
+    package (`trace.go`) to log requests that exceed a latency threshold
+    (typically 500ms). Each trace header records the operation (`"List"`,
+    `"Get"`, `"Create"`, `"Patch"`), `url`, `user-agent`, `audit-id`, `client`
+    IP, start timestamp, and `total time`. Below the header, nested sub-traces
+    appear in brackets `[...]` and sequential steps exceeding the step threshold
+    appear as `---"<StepName>" <duration>ms`.
+3.  **Example trace logs for typical problems**:
+    -   **Slow etcd / storage read or write** (`List(recursive=true) etcd3` or
+        `GuaranteedUpdate etcd3` dominates `total time`):
+        ```text
+        I1015 11:36:56.835120      10 trace.go:236] Trace[123456789]: "List" url:/api/v1/pods,user-agent:my-controller/v1.0.0,audit-id:11111111-2222-3333-4444-555555555555,client:10.0.0.1 (15-Oct-2026 11:36:49.460) (total time: 7374ms):
+        Trace[123456789]: ["List(recursive=true) etcd3" 6890ms (11:36:49.461)]
+        Trace[123456789]: ---"Objects listed" 6891ms (11:36:56.352)
+        Trace[123456789]: ---"SerializeObject" 480ms (11:36:56.832)
+        ```
+    -   **Slow client / response streaming bottleneck** (`"Objects listed"` is
+        fast, but `"SerializeObject"` and `---"Write call succeeded"` or
+        `---"Write call failed"` dominate `total time` because a slow or
+        bandwidth-constrained client takes seconds to read a large response
+        payload):
+        ```text
+        I1015 11:40:12.104512      10 trace.go:236] Trace[987654321]: "List" url:/api/v1/pods,user-agent:slow-watcher/v0.1,audit-id:aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee,client:10.0.0.2 (15-Oct-2026 11:40:01.002) (total time: 11102ms):
+        Trace[987654321]: ---"Objects listed" 45ms (11:40:01.047)
+        Trace[987654321]: ["SerializeObject" 11055ms (11:40:01.047)]
+        Trace[987654321]: ---"Write call succeeded" 11054ms (11:40:12.101)
+        ```
+4.  **Upstream documentation & future evolution (always cite both)**: Always
+    link to https://github.com/kubernetes/utils/blob/master/trace/README.md as
+    the upstream OSS documentation for `trace.go`, and mention
+    https://github.com/kubernetes/enhancements/tree/master/keps/sig-instrumentation/647-apiserver-tracing
+    (KEP-647: APIServer Tracing) as a possible future change to how
+    `kube-apiserver` traces are generated (via OpenTelemetry).
+
 ### Identifying Heavy API Server Clients from HTTP Access Logs
 
 To identify which clients are generating the most load on `kube-apiserver`,
@@ -212,7 +261,7 @@ https://docs.cloud.google.com/kubernetes-engine/docs/how-to/view-logs#control_pl
     releases (making regex extraction and Log Analytics queries reliable), and
     include this example log line:
     ```text
-    I1015 11:36:56.835535      10 httplog.go:137] "HTTP" verb="GET" URI="/api/v1/namespaces/default/pods" latency="7.374935s" userAgent="my-controller/v1.0.0 (linux/amd64)" audit-ID="b23db1f5-de18-4aa3-b506-46de0ed25e75" srcIP="10.128.0.27:52972" apf_pl="workload-low" apf_fs="everybody" apf_iseats=1 apf_fseats=0 apf_additionalLatency="0s" apf_execution_time="7.374765s" resp=200
+    I1015 11:36:56.835535      10 httplog.go:137] "HTTP" verb="GET" URI="/api/v1/namespaces/default/pods" latency="7.374935s" userAgent="my-controller/v1.0.0 (linux/amd64)" audit-ID="11111111-2222-3333-4444-555555555555" srcIP="10.0.0.1:12345" apf_pl="workload-low" apf_fs="everybody" apf_iseats=1 apf_fseats=0 apf_additionalLatency="0s" apf_execution_time="7.374765s" resp=200
     ```
 2.  **Key fields for client load analysis**:
     -   **`user_agent`** (`userAgent` in raw log text): Identifies the client

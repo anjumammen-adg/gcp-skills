@@ -181,4 +181,4 @@ procedural control flow with dynamic SQL generation.
     3.  Convert procedural control flow to BigQuery Procedural Language (`CREATE
         PROCEDURE` with `LOOP`, `WHILE`, `IF...ELSE`).
 
-[snowflake_ref]: https://cloud.google.com/bigquery/docs/reference/migration/snowflake-sql
+[snowflake_ref]: https://cloud.google.com/bigquery/docs/migration/snowflake-sql
